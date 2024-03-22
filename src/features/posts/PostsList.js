@@ -24,31 +24,26 @@ const PostsList = () => {
 
   let content;
   if (postStatus === 'loading') {
-    content = <div className="loader">Loading...</div>;
+    content = <p>"Loading..."</p>;
   } else if (postStatus === 'succeeded') {
-    // Sort posts in reverse chronological order by datetime string
     const orderedPosts = posts
       .slice()
       .sort((a, b) => b.date.localeCompare(a.date));
-    content = orderedPosts.map(
-      (post, index) =>
-        post && (
-          <PostExcerpt
-            key={post.id ? `${post.id}_${index}` : nanoid()}
-            post={post}
-          />
-        )
-    );
+
+    const preContent = orderedPosts.filter((val, i) => {
+      if (i !== orderedPosts.length - 1) {
+        return val.id !== orderedPosts[i + 1].id;
+      }
+      return val;
+    });
+    content = preContent.map((post) => (
+      <PostExcerpt key={post.id} post={post} />
+    ));
   } else if (postStatus === 'failed') {
-    content = <div>{error}</div>;
+    content = <p>{error}</p>;
   }
 
-  return (
-    <section>
-      <h2>Posts</h2>
-      {content}
-    </section>
-  );
+  return <section>{content}</section>;
 };
 
 export default PostsList;
